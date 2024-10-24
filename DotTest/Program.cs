@@ -24,6 +24,7 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile)); // Register AutoMapper
+builder.Services.AddMemoryCache(); //MemoryCache
 
 var app = builder.Build();
 
