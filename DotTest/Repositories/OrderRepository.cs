@@ -10,10 +10,10 @@ namespace DotTest.Repositories
 
     public class OrderRepository : IOrderRepository
     {
-        private readonly DotTestContext _context;
+        private readonly ApplicationDbContext _context;
         private readonly IMemoryCache _cache;
 
-        public OrderRepository(DotTestContext context, IMemoryCache cache)
+        public OrderRepository(ApplicationDbContext context, IMemoryCache cache)
         {
             _context = context;
             _cache = cache;
@@ -53,26 +53,38 @@ namespace DotTest.Repositories
 
             return order;
         }
-
         public async Task AddOrder(Order order)
         {
-            // Validasi (sama seperti sebelumnya)
+            if (order.CustomerId <= 0 || await _context.Customers.FindAsync(order.CustomerId) == null)
+            {
+                throw new ArgumentException("Invalid customer ID.");
+            }
+
+            if (order.Price < 0)
+            {
+                throw new ArgumentException("Total price cannot be negative.");
+            }
 
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
-
-            // Invalidate cache setelah menambah data
-            _cache.Remove("orders"); // Menghapus cache
+            _cache.Remove("orders");
         }
 
         public async Task UpdateOrder(Order order)
         {
-            // Validasi (sama seperti sebelumnya)
+            if (order.CustomerId <= 0 || await _context.Customers.FindAsync(order.CustomerId) == null)
+            {
+                throw new ArgumentException("Invalid customer ID.");
+            }
 
-            _context.Orders.Update(order);
+
+            if (order.Price < 0)
+            {
+                throw new ArgumentException("Total price cannot be negative.");
+            }
+
+            _context.Entry(order).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-
-            // Invalidate cache setelah memperbarui data
             _cache.Remove($"order_{order.OrderId}");
             _cache.Remove("orders"); // Menghapus cache
         }

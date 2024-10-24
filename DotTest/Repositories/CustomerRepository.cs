@@ -54,26 +54,37 @@ namespace DotTest.Repositories
 
         public async Task AddCustomer(Customer customer)
         {
-            // Validasi (sama seperti sebelumnya)
 
+            if (await _context.Customers.AnyAsync(c => c.Email == customer.Email))
+            {
+                throw new ArgumentException("Customer with this email already exists.");
+            }
+            if (await _context.Customers.AnyAsync(c => c.Name == customer.Name))
+            {
+                throw new ArgumentException("Customer with this name already exists.");
+            }
             _context.Customers.Add(customer);
             await _context.SaveChangesAsync();
-
-            // Invalidate cache setelah menambah data
-            _cache.Remove("customers"); // Menghapus cache
+            _cache.Remove("customers");
         }
 
         public async Task UpdateCustomer(Customer customer)
         {
-            // Validasi (sama seperti sebelumnya)
-
-            _context.Customers.Update(customer);
+            if (await _context.Customers.AnyAsync(c => c.Email == customer.Email))
+            {
+                throw new ArgumentException("Customer with this email already exists.");
+            }
+            if (await _context.Customers.AnyAsync(c => c.Name == customer.Name))
+            {
+                throw new ArgumentException("Customer with this Name already exists.");
+            }
+            _context.Entry(customer).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-
-            // Invalidate cache setelah memperbarui data
             _cache.Remove($"customer_{customer.CustomerId}");
             _cache.Remove("customers"); // Menghapus cache
         }
+
+
 
         public async Task DeleteCustomer(int id)
         {
