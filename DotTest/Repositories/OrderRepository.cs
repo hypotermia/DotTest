@@ -10,10 +10,10 @@ namespace DotTest.Repositories
 
     public class OrderRepository : IOrderRepository
     {
-        private readonly ApplicationDbContext _context;
+        private readonly DotTestContext _context;
         private readonly IMemoryCache _cache;
 
-        public OrderRepository(ApplicationDbContext context, IMemoryCache cache)
+        public OrderRepository(DotTestContext context, IMemoryCache cache)
         {
             _context = context;
             _cache = cache;
