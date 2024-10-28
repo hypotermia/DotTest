@@ -3,3 +3,5 @@
 3. jalankan project menggunakan IIS Express
 4. lalu coba lah untuk membuat sebuah data pada Customer terlebih dahulu 
 5. buat data pada Order .
+
+NB : jangan lupa sesuaikan Connection string yang berada pada appsettings.json dengan localhost anda.
